@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow - To-Do List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="page-shell">
+        <section class="app-card">
+            <header class="hero">
+                <div>
+                    <p class="eyebrow">PYTHON PRODUCTIVITY APP</p>
+                    <h1>Task<span>Flow</span></h1>
+                    <p class="subtitle">Organize your day. Complete your goals.</p>
+                </div>
+                <div class="hero-icon">✓</div>
+            </header>
+
+            <form class="add-form" action="{{ url_for('add_task') }}" method="POST">
+                <input type="text" name="title" maxlength="120"
+                       placeholder="What needs to be done?" required autocomplete="off">
+                <button type="submit">+ Add Task</button>
+            </form>
+
+            <div class="stats">
+                <div class="stat">
+                    <strong>{{ total }}</strong>
+                    <span>Total Tasks</span>
+                </div>
+                <div class="stat">
+                    <strong>{{ completed }}</strong>
+                    <span>Completed</span>
+                </div>
+                <div class="stat">
+                    <strong>{{ total - completed }}</strong>
+                    <span>Remaining</span>
+                </div>
+            </div>
+
+            <div class="list-header">
+                <h2>My Tasks</h2>
+                {% if completed %}
+                <form action="{{ url_for('clear_completed') }}" method="POST">
+                    <button class="clear-btn" type="submit">Clear completed</button>
+                </form>
+                {% endif %}
+            </div>
+
+            <section class="task-list">
+                {% for task in tasks %}
+                <article class="task {% if task['completed'] %}done{% endif %}">
+                    <form action="{{ url_for('toggle_task', task_id=task['id']) }}" method="POST">
+                        <button class="check-btn" aria-label="Toggle task">
+                            {% if task['completed'] %}✓{% endif %}
+                        </button>
+                    </form>
+                    <span class="task-title">{{ task['title'] }}</span>
+                    <form action="{{ url_for('delete_task', task_id=task['id']) }}" method="POST">
+                        <button class="delete-btn" aria-label="Delete task">×</button>
+                    </form>
+                </article>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">📝</div>
+                    <h3>No tasks yet</h3>
+                    <p>Add your first task above and start being productive.</p>
+                </div>
+                {% endfor %}
+            </section>
+
+            <footer>
+                <span>Built with Python + Flask + SQLite</span>
+                <span>Responsive UI • Modern CSS</span>
+            </footer>
+        </section>
+    </main>
+</body>
+</html>
